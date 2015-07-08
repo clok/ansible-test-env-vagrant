@@ -1,0 +1,30 @@
+---
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  tasks:
+  - name: be sure apt-get is updated
+    apt: update_cache=yes
+
+  - name: install required packages
+    apt: name={{ item }}
+         state=present
+    with_items:
+      - git
+      - python-pip
+      - mercurial
+      - subversion
+
+  - name: install pip packages
+    pip: name={{ item }}
+         state=present
+    with_items:
+      - nose
+      - mock
+      - pycrypto
+      - jinja2
+
+  - name: git clone ansible code
+    git: repo=https://github.com/ansible/ansible.git
+         recursive=yes
+         dest=/home/vagrant/ansible

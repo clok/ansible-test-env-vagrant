@@ -28,3 +28,12 @@
     git: repo=https://github.com/ansible/ansible.git
          recursive=yes
          dest=/home/vagrant/ansible
+
+  - name: make utils dir
+    file: path=/home/vagrant/utils
+          state=directory
+         
+  - name: copy utils to VM
+    copy: src=./bin/purge-mysql.sh
+          dest=/home/vagrant/utils/purge-mysql.sh
+          mode=0755

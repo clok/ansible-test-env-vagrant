@@ -1,0 +1,61 @@
+---
+- hosts: all
+  remote_user: vagrant
+  sudo: yes
+  tasks:
+  - name: be sure libselinux-python are installed
+    yum:
+      name=libselinux-python
+      state=present
+
+  - name: install the 'Development tools' package group
+    yum: name="@Development tools" state=present
+      
+  - name: adding pip rpm for RHEL 6
+    yum: name=http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+         state=present
+      
+  - name: install required packages
+    yum: name={{ item }}
+         state=present
+    with_items:
+      - python-devel
+      - git
+      - python-pip
+      - mercurial
+      - subversion
+
+  - name: install pip packages
+    pip: name={{ item }}
+         state=present
+    with_items:
+      - nose
+      - mock
+      - pycrypto
+      - jinja2
+
+  - name: checking if ansible repo already cloned
+    stat: path=/home/vagrant/ansible
+    register: ansible_repo
+      
+  - name: git clone ansible code
+    git: repo=https://github.com/ansible/ansible.git
+         recursive=yes
+         dest=/home/vagrant/ansible
+    when: ansible_repo.stat.isdir is not defined
+
+  - name: set owner of ansible repo
+    file: path=/home/vagrant/ansible
+          state=directory
+          owner=vagrant
+          group=vagrant
+          recurse=yes
+    
+  - name: make utils dir
+    file: path=/home/vagrant/utils
+          state=directory
+         
+  - name: copy utils to VM
+    copy: src=./bin/purge-mysql.sh
+          dest=/home/vagrant/utils/purge-mysql.sh
+          mode=0755

@@ -1,2 +1,5 @@
-[ansible]
+[ansible-ubuntu]
 192.168.10.11 ansible_ssh_user=vagrant
+
+[ansible-centos]
+192.168.10.12 ansible_ssh_user=vagrant
